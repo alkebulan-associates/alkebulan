@@ -1,0 +1,8 @@
+- can choose different ebay sites to list on?
+    -  selling in britain is definitely a vibe
+    - all of this pupeteer code is coming from italy
+        - someone searching in italy, both the pupeteer code and linux seller code is from italy....
+- changing payment to direct debit/credit
+- reselling used items
+- assess security of my application
+- 
