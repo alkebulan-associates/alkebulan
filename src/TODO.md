@@ -5,4 +5,6 @@
 - changing payment to direct debit/credit
 - reselling used items
 - assess security of my application
-- 
+- quantity
+- argument validation
+- move this json outside of the python file to avoid accidentally editing it
