@@ -66,7 +66,7 @@ def lambda_handler(event, context):
                     {"Name": "Style", "Value": "Polo Shirt"},
                     {"Name": "Sleeve Style", "Value": "Short Sleeve"},
                     {"Name": "Type", "Value": "Short Sleeve"},
-                    {"Name": "Department", "Value": "Mens Jeans"}
+                    {"Name": "Department", "Value": "Men"}
                 ]
             },
             "ReturnPolicy": {

@@ -9,7 +9,9 @@
 
 // load puppeteer
 const puppeteer = require('puppeteer');
-const domain = "https://www.amazon.it";
+
+// const domain = "https://www.amazon.com";
+const domain = "https://www.macys.com/shop/sale/Special_offers,Sortby/Clearance%2FCloseout,BEST_SELLERS?id=3536";
 
 // process.env.NODE_ENV // "development"
 
@@ -18,7 +20,7 @@ const domain = "https://www.amazon.it";
   // wrapper to catch errors
   try {
     // create a new browser instance
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({ headless: false });
 
     // create a page inside the browser;
     const page = await browser.newPage();
@@ -26,18 +28,18 @@ const domain = "https://www.amazon.it";
     // navigate to a website and set the viewport
     await page.setViewport({ width: 1280, height: 800 });
     await page.goto(domain, {
-      timeout: 3000000
+      timeout: 3000
     });
-    
+    page.$eval("region_2_child_2")
     page.textContent
 
     // search and wait the product list
-    await page.type('#twotabsearchtextbox', 'iphone x 64gb');
-    await page.click('input.nav-input');
+    // await page.type('#twotabsearchtextbox', 'iphone x 64gb');
+    // await page.click('input.nav-input');
     await page.waitForSelector('.s-image');
 
     // create a screenshots
-    await page.screenshot({path: 'search-iphone-x.png'});
+    // await page.screenshot({path: 'search-iphone-x.png'});
 
     const products = await page.evaluate(() => {
       const links = Array.from(document.querySelectorAll('.s-result-item'));
