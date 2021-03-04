@@ -8,3 +8,4 @@
 - quantity
 - argument validation
 - move this json outside of the python file to avoid accidentally editing it
+- support for same item at different price on macy's website
