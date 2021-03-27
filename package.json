@@ -4,13 +4,21 @@
   "description": "online arbitrage amigo",
   "main": "index.js",
   "dependencies": {
+    "@aws-cdk/aws-lambda-event-sources": "^1.91.0",
+    "@aws-cdk/aws-sqs": "^1.91.0",
+    "@aws-cdk/core": "^1.91.0",
+    "aws-cdk": "^1.91.0",
+    "aws-sdk": "^2.856.0",
+    "ghost-cursor": "^1.1.5",
     "gulp": "^4.0.2",
+    "jsdom": "^16.5.1",
+    "node-fetch": "^2.6.1",
     "puppeteer": "^7.1.0",
     "typescript": "^4.1.3"
   },
-  "devDependencies": {},
   "scripts": {
-    "test": "APP_ENV=SANDBOX searcher.ts"
+    "test-searcher": "APP_ENV=SANDBOX searcher.ts",
+    "test-saver": "APP_ENV=SANDBOX /Users/adisojeda/Desktop/alkebulan/src/functions/saver.ts"
   },
   "repository": {
     "type": "git",

@@ -1,11 +1,41 @@
+### IN ORDER OF PRIORITY
+- SPAN MULTIPLE PAGES FOR MACYS
+- format attribute fetching depending on what item it is
+    - need to figure out which attributes are required for each item
+- only posting items in a popular size
+    - could just filter url for said size
+- handling failed orders
+- IMPROVE HUMANLIKE NATURE OF SEARCHING
+    - https://stackoverflow.com/questions/33225947/can-a-website-detect-when-you-are-using-selenium-with-chromedriver
+    - https://stackoverflow.com/questions/49031428/how-to-disable-css-in-python-selenium-using-chromeoptions
+    - https://intoli.com/blog/making-chrome-headless-undetectable/
+    - https://news.ycombinator.com/item?id=14936025
+    - https://gist.github.com/tegansnyder/c3aeae4d57768c58247ae6c4e5acd3d1
+- more event driven way to monitor orders?
+- assess security of my application
+    - argument validation
+- easy way to pause this from operating
+- randomize lambda ip addresses they are called from
+- move this json outside of the python file to avoid accidentally editing it
+- [PREDICTING WHAT WILL SELL](https://community.ebay.com/t5/Selling/are-you-good-at-predicting-what-will-sell/td-p/28349479)
+
+- remove selenium from lister step
+- quantity
 - can choose different ebay sites to list on?
     -  selling in britain is definitely a vibe
     - all of this pupeteer code is coming from italy
         - someone searching in italy, both the pupeteer code and linux seller code is from italy....
 - changing payment to direct debit/credit
 - reselling used items
-- assess security of my application
-- quantity
-- argument validation
-- move this json outside of the python file to avoid accidentally editing it
 - support for same item at different price on macy's website
+- watch out for "sale ends" on items
+- fix product brand formatting to adjust for apostrophe's that might be in brand name
+- print soup element attrs as xml
+- better format description
+- ensure all items are clothes
+- moving beyond clothes items
+- notifications for:
+    - failed item purchase function
+    - item failing to be removed from the queue
+    - group of failed searches for a specific website
+- phone number??? get text phone # from online or company

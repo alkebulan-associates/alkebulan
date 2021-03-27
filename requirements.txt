@@ -1,0 +1,6 @@
+bs4==0.0.1
+selenium==3.141.0
+ebaysdk==2.2.0
+chromedriver-binary==2.37.0 # NOTE: UNTESTED
+lxml==4.6.2
+boto3==1.17.30

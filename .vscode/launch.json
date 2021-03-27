@@ -5,13 +5,30 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Current File",
+            "name": "Python: Current File - test",
             "type": "python",
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
             "envFile": "${workspaceFolder}/secrets/.env",
             "justMyCode": false
+        },
+        {
+            "name": "Python: Current File - prod",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "envFile": "${workspaceFolder}/secrets/.env-prod",
+            "justMyCode": false
+        },
+        {
+            "name": "node: Current File - prod",
+            "type": "node",
+            "console": "integratedTerminal",
+            "request": "launch",
+            "program": "${file}",
+            "envFile": "${workspaceFolder}/secrets/.env-prod"
         }
     ]
 }

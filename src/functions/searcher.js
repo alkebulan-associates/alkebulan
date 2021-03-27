@@ -5,7 +5,8 @@ const AWS = require('aws-sdk');
 // load puppeteer
 const puppeteer = require('puppeteer');
 // jsdom
-const jsdom = require("jsdom")
+const jsdom = require("jsdom");
+const { createSmartBrowser } = require("./utils");
 
 AWS.config.update({region: process.env["REGION"]});
 // Create an SQS service object
@@ -15,32 +16,7 @@ const host = "https://www.macys.com";
 
 async function macysSearcher() {
   // create a new browser instance
-  const browser = await puppeteer.launch({
-    // headless: false
-  });
-  // create a page inside the browser;
-  const page = await browser.newPage();
-  // navigate to a website and set the viewport
-  await page.setViewport({ width: 1920, height: 1080 });
-  // set user agent to remove headless label
-  page.setUserAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.75 Safari/537.36")
-  await page.setExtraHTTPHeaders({
-    'Accept-Language': 'en-US'
-  });
-  await page.setRequestInterception(true);
-  // Now we’ll disable the CSS and images, leaving only the necessary content in the website.
-  page.on('request', (req) => {
-    try {
-        if(req.resourceType() == 'stylesheet' || req.resourceType() == 'font' || req.resourceType() == 'image'){
-            req.abort();
-        }
-        else {
-            req.continue();
-        }
-      } catch (error) {
-        
-      }
-  });
+  const browser, page = await createSmartBrowser()
   // go to our specified domain
   await page.goto(domain, {
     // timeout: 5000  
@@ -62,7 +38,7 @@ async function macysSearcher() {
       // split the span based on the dollar sign within it, then parse the price
       const originalPrice = parseFloat(originalPriceSpan.textContent.replace("$",""));
       // console.log(`originalPrice: ${originalPrice}`)
-      const salePriceSpan =  productInfo.getElementsByClassName('regular')[1];
+      const salePriceSpan =  productInfo.getElementsByClassName('discount')[0];
       const salePrice = parseFloat(salePriceSpan.textContent.split("$")[1]);
       // console.log(`saleprice: ${salePrice}`);
       // if sale price is nan, meaning we have an item with a varying price range
@@ -123,49 +99,11 @@ exports.handler =  async function(event, context) {
     return macysSearcher()
   } catch(error) {
     console.error(`error running Macys search function: ${error}`)
+    return new Promise(resolve => resolve('failed to run macys searcher'))
   }
-  return new Promise(resolve => resolve('resolved'))
 }
 
 // if __name__ == __main__ js equivalent
 if (typeof require !== 'undefined' && require.main === module) {
   macysSearcher()
 }
-
-// scrap functions I might use later ////////////////////////////////////////////////////////////////////////////////////
-// } catch (error) {
-//   // display any errors encountered during this process
-//   console.log(error)
-// }
-// const products = await page.evaluate(() => {
-//   const links = Array.from(document.querySelectorAll('.s-result-item'));
-//   return links.map(link => {
-//     if (link.querySelector(".a-price-whole")) {
-//       return {
-//         name: link.querySelector(".a-size-medium.a-color-base.a-text-normal").textContent,
-//         url: link.querySelector(".a-link-normal.a-text-normal").href,
-//         image: link.querySelector(".s-image").src,
-//         price: parseFloat(link.querySelector(".a-price-whole").textContent.replace(/[,.]/g, m => (m === ',' ? '.' : ''))),
-//       };
-//     }
-//   }).slice(0, 5);
-// });
-//   <!-- You can, however, inject variables into evaluate methods and update their values (if you wish), for example:
-
-// let foo = 'foo'
-// console.log(foo); // Outputs 'foo' as expected
-// foo = await page.evaluate((injectedFoo) => {
-//   return `new${injectedFoo}`;
-// }, foo);
-// console.log(foo); // Outputs 'newfoo' -->
-  // await page.screenshot({
-  //   path: "./screenshot.jpg",
-  //   type: "jpeg",
-  //   fullPage: true
-  // });
-
-  // const pageHtml = await page.evaluate(() => document.querySelector('*').outerHTML)
-// fs.writeFile("pageHtml.txt", pageHtml, function (err) {
-  //   if (err) return console.log(err);
-  //   console.log('pageHtml > pageHTml.txt');
-  // });
