@@ -1,33 +1,30 @@
-import createSmartBrowser from './utils';
-import createCursor from "ghost-cursor";
-
 // AWS
-const AWS = require('aws-sdk');
-// load puppeteer
-const puppeteer = require('puppeteer');
-// jsdom
-const jsdom = require("jsdom");
+import AWS from 'aws-sdk';
+import { createSmartBrowser } from './utils.js';
+
 // update AWS config region
 AWS.config.update({region: process.env["REGION"]});
 // Create an SQS service object
 const sqs = new AWS.SQS({apiVersion: '2012-11-05'});
 // create kms for decrypting the information
-const kms = new AWS.KMS({apiVersion: '2012-11-05'})
+const kms = new AWS.KMS({apiVersion: '2014-11-01'});
 // create a SNS reference to push order updates
-const sns = new AWS.SNS({apiVersion: '2012-11-05'})
+const sns = new AWS.SNS({apiVersion: '2010-03-31'});
 
-async function purchaseMacysItem(itemUrlString) {
+async function purchaseMacysItem(context) {
     // create inconspicuous browser and cursor
-    const browser, page = createSmartBrowser();
-    const cursor = createCursor(page);
+    const [browser, page, cursor] = await createSmartBrowser(false);
     // go to item url 
-    await page.goto(itemUrlString);
+    await page.goto(context.itemUrlString);
     // begin checkout process
     // INSTALL AND USE CHROMIUM DEBUGGER!
     // - choose size
+    const sizeSelector = context.itemInfo["sizeSelector"]
+    await cursor.click(sizeSelector);
+    // add the item to our bag
+    await cursor.click("div.act-btn > button[data-action=\"product:bag:add\"]");
+    // 
     await page.waitForSelector("a[id=CHECKOUT]");
-    document.querySelector("elementAnd.classnames go here");
-    continue
     // ****** NOTIFICATION MODAL WINDOW pops up
     // find "View Bag &amp; Checkout" button
     await cursor.click("a[id=atbIntViewBagAndCheckout]");
@@ -83,10 +80,10 @@ async function purchaseMacysItem(itemUrlString) {
     const expirationDate = new Date(kms.decrypt(process.env.creditCcard.expirationDate));
     // set the month
     await page.select("select[name=creditCard.expMonth]", expirationDate.getMonth(), {delay: 20});
-    continue //set month here
+    // continue //set month here
     // set the year
     await page.select("select[name=creditCard.expYear]", expirationDate.getFullYear(), {delay: 20});
-    continue //set year here
+    // continue //set year here
     // set the cvc
     await page.type("input[name=creditCard.securityCode]", kms.decrypt(process.env.creditCard.cvc), {delay: 20});
     // find button with text "Continue" click it
@@ -102,7 +99,7 @@ async function purchaseMacysItem(itemUrlString) {
     await cursor.click("button[id=\"rc-place-order\"]")
     // extract receipt information and return it
     // once we have this information, send the tracking number in an ebay to our purchaser
-    continue
+    // continue
 
     // send mssage
 
@@ -117,7 +114,7 @@ async function purchaseMacysItem(itemUrlString) {
 // - and send an email to the purchaser
 
 // lambda handler for use in aws
-exports.handler =  async function(event, context) {
+export async function handler(event, context) {
     // run our macy's search function
     try {
       console.log("Calling Macys purchase function...")
@@ -129,8 +126,21 @@ exports.handler =  async function(event, context) {
       return new Promise(resolve => resolve('failed'))
     }
   }
-  
-// if __name__ == __main__ js equivalent
-if (typeof require !== 'undefined' && require.main === module) {
-    purchaseMacysItem("https://www.macys.com/shop/product/calvin-klein-shine-hooded-packable-down-puffer-coat-created-for-macys?ID=11031404&CategoryID=3536")
+function isMain() {
+  const currentFile = import.meta.url.split("//")[1];  // get current file we are in
+  const currentModule = process.argv[1];  // get currently running module
+  return currentFile == currentModule;
+}
+
+if (isMain()) {
+    const context = Object()
+    context.itemUrlString = "https://www.macys.com/shop/product/calvin-klein-shine-hooded-packable-down-puffer-coat-created-for-macys?ID=11031404&CategoryID=3536"
+    context.itemInfo = {
+      "sizeSelector": "ul.medium-float-children.c-reset > li.swatch-itm.static[data-index=\"3\"]"
+    }
+    context.shippingInfo = {
+    }
+    purchaseMacysItem(
+      context
+      )
 }

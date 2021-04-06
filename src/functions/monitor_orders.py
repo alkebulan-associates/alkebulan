@@ -55,8 +55,11 @@ def monitor_orders():
     #!/usr/bin/env python3
     poller = Poller(storage, storage)
     poller.run()
+
+    if storage.hasOrders():
+        
+        # trigger order lambda
     # trigger request and log the response to cloudwatch
-    LOGGER.info(f"EBAY API RESPONSE: {response.status}")
     return response
 
 def lambda_handler(event, context):
@@ -64,26 +67,14 @@ def lambda_handler(event, context):
     
     runs: DAILY
     """
-    # get our sqs queue
-    sqs_queue = get_queue(os.environ["SQS_QUEUE_NAME"])
-    # fetch the sqs queue messages in batches
-    sqs_messages = receive_messages(queue=sqs_queue, max_number=2, wait_time=0)
-    if len(sqs_messages) == 0:
-        return { "status": 500, "message": "empty queue"} # The server encountered an unexpected condition which prevented it from fulfilling the request.
-    # var for number of successful ebay postings
-    successes = 0
-    # for each message
-    for msg in sqs_messages:
-        try:
-            # format the item in the message for posting
-            item_details = format_item_details(msg)
-            # list the item
-            resp = list_ebay_item(item_details)
-            LOGGER.warn(resp.text)
-            successes += 1
-        except:
-            LOGGER.error(f"{msg.body} failed to be posted to ebay")
-            traceback.print_exc()
+    try:
+        # get the orders
+        resp = monitor_orders()
+        LOGGER.warn(resp.text)
+        successes += 1
+    except:
+        LOGGER.error(f"{msg.body} failed to be posted to ebay")
+        traceback.print_exc()
     if successes == 2:
         return { "status": 200 } # full success
         LOGGER.error(f"{sqs_messages} successfully posted to ebay")
@@ -94,6 +85,36 @@ def lambda_handler(event, context):
 
 if __name__ == '__main__':
     (opts, args) = parse_args("usage: python -m samples.poller [options]")
-
     poller = Poller(opts, CustomStorage())
     poller.run()
+
+AWS.config.region = '<REGION>';
+AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+  IdentityPoolId: '<IDENTITY-POOL-ID>',
+});
+var lambda = new AWS.Lambda();
+function returnGreetings() {
+  document.getElementById('submitButton').disabled = true;
+  var name = document.getElementById('name');
+  var input;
+  if (name.value == null || name.value == '') {
+    input = {};
+  } else {
+    input = {
+      name: name.value
+    };
+  }
+  lambda.invoke({
+    FunctionName: 'greetingsOnDemand',
+    Payload: JSON.stringify(input)
+  }, function(err, data) {
+    var result = document.getElementById('result');
+    if (err) {
+      console.log(err, err.stack);
+      result.innerHTML = err;
+    } else {
+      var output = JSON.parse(data.Payload);
+      result.innerHTML = output;
+    }
+    document.getElementById('submitButton').disabled = false;
+  });
