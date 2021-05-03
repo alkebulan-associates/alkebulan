@@ -140,7 +140,8 @@ if (isMain()) {
     }
     context.shippingInfo = {
     }
+    // test our method
     purchaseMacysItem(
       context
-      )
+    )
 }
